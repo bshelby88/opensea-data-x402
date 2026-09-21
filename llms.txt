@@ -1,0 +1,23 @@
+# BriefSnap — LLM.txt
+
+> Paid document summarization on Base mainnet via x402.
+> $1.00 per summarization request.
+
+## Endpoints
+
+### Summarize ($1.00)
+POST /api/summarize
+Body: { "text": "...", "length?"?: "short" }
+
+## Protocol
+All requests use x402 payment on Base mainnet (eip155:8453).
+PayTo: 0x7861db4efc14a1ed5dd8c96c528a3796560f1393
+Facilitator: https://x402-agent-pay.com/facilitator
+
+## Health
+GET /health — returns 200 when service is ready
+
+## Example
+curl -X POST https://briefsnap-x402.fly.dev/api/summarize \
+  -H "Content-Type: application/json" \
+  -d '{"text": "The quarterly earnings showed strong growth across all segments."}'
