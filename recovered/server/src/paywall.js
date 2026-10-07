@@ -9,7 +9,7 @@ export const PRICE = `$${AMOUNT_USDC}`;
 // royal-ruby b23de44, briefsnap 7c19140). x402.org/facilitator has no
 // eip155:8453 exact kind (probed 2026-09-15).
 export const NETWORK = "eip155:8453";
-export const FACILITATOR_URL = "https://raen-facilitator.fly.dev/facilitator";
+export const FACILITATOR_URL = "https://x402-agent-pay.com/facilitator";
 export const SERVICE_NAME = "opensea-collection-data";
 // Used for manifest.pricing only (USDC-on-Base x402 pricing entry). Runtime
 // enforcement is the @x402/express v2 middleware in server.ts (x402scan
