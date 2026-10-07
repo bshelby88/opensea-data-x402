@@ -16,7 +16,7 @@
         "network": "eip155:8453",
         "payTo": "0x7861db4efc14a1ed5dd8c96c528a3796560f1393",
         "extra": {
-          "facilitator": "https://raen-facilitator.fly.dev/facilitator"
+          "facilitator": "https://x402-agent-pay.com/facilitator"
         }
       },
       "description": "Summarize articles, contracts, reports, or meeting notes into key points. Body: { text, length? }",
