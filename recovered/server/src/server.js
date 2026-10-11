@@ -133,6 +133,12 @@ const openapiSpec = {
 // Payment middleware on the paid route only. The 402 challenge is emitted in the
 // x402 v2 wire format (PAYMENT-REQUIRED header). Settlement happens after the
 // handler succeeds (verify → run → settle).
+// EXEC-140 (2026-10-11): also gate GET/HEAD on /api — Coinbase Bazaar
+// validate_endpoint probes paid routes with GET/HEAD, and @x402/express >=2.23
+// matches routes by exact verb, so a "POST /api" key alone let GET fall through
+// to a 404/405 and validate_endpoint reported returns_402 failed. The "* /api"
+// alias forces the same 402 challenge for every method; "POST /api" stays for
+// exact-verb manifest compatibility.
 app.use(paymentMiddleware({
     "POST /api": {
         accepts: {
@@ -144,6 +150,18 @@ app.use(paymentMiddleware({
         },
         serviceName: "opensea-collection-data",
         description: "OpenSea collection data: floor, listings, offers, traits for any slug.",
+        extensions: { ...bazaarExtension },
+    },
+    "* /api": {
+        accepts: {
+            scheme: "exact",
+            price: PRICE,
+            network: NETWORK,
+            payTo: PAY_TO,
+            extra: { facilitator: FACILITATOR_URL },
+        },
+        serviceName: "opensea-collection-data",
+        description: "OpenSea collection data: floor, listings, offers, traits for any slug. (GET/HEAD gate for Bazaar validate_endpoint)",
         extensions: { ...bazaarExtension },
     },
 }, x402Server, undefined, undefined, false));
