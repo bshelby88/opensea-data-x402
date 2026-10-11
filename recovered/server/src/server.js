@@ -88,7 +88,7 @@ const x402Discovery = {
                     facilitator: FACILITATOR_URL,
                 },
             },
-            description: "OpenSea collection data: floor, listings, offers/traits for any slug.",
+            description: "Query OpenSea collection data for any slug: floor price, listings, offers, and traits. POST {slug}, receive structured collection data as JSON. $0.01 per call, Base USDC x402.",
             mimeType: "application/json",
             extensions: { ...bazaarExtension },
         },
