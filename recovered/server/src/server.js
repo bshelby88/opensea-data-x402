@@ -8,6 +8,7 @@ import { declareDiscoveryExtension } from "@x402/extensions/bazaar";
 import { toolHandler } from "./handler.js";
 import { manifest } from "./manifest.js";
 import { FACILITATOR_URL, NETWORK, PAY_TO, PRICE } from "./paywall.js";
+import { buildAgentCard } from "./agent-card.js";
 const app = express();
 app.set("trust proxy", true); // Fly terminates TLS — emit https resource URL in challenges
 app.use(express.json());
@@ -179,6 +180,10 @@ app.get("/openapi.json", (_req, res) => {
 });
 app.get("/health", (_req, res) => {
     res.json({ ok: true, tool: manifest.name });
+});
+// A2A agent card (free metadata; no payment logic touched).
+app.get(["/.well-known/agent.json", "/.well-known/agent-card.json"], (_req, res) => {
+    res.json(buildAgentCard({ baseUrl: "https://opensea-data-x402.fly.dev", price: PRICE, network: NETWORK }));
 });
 // GET /sample — machine-readable free sample (RAEN A2A charter surface):
 // one real OpenSea call, paid by the service, so buyers get live evidence pre-purchase.
