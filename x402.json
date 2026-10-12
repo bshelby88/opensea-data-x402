@@ -14,7 +14,7 @@
         "scheme": "exact",
         "price": "$1.00",
         "network": "eip155:8453",
-        "payTo": "0x7861db4efc14a1ed5dd8c96c528a3796560f1393",
+        "payTo": "0x9B8a27e03CEbA490953cDa8AB1291c0E13bAf72f",
         "extra": {
           "facilitator": "https://x402-agent-pay.com/facilitator"
         }

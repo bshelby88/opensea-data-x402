@@ -11,7 +11,7 @@ Body: { "text": "...", "length?"?: "short" }
 
 ## Protocol
 All requests use x402 payment on Base mainnet (eip155:8453).
-PayTo: 0x7861db4efc14a1ed5dd8c96c528a3796560f1393
+PayTo: 0x9B8a27e03CEbA490953cDa8AB1291c0E13bAf72f
 Facilitator: https://x402-agent-pay.com/facilitator
 
 ## Health
