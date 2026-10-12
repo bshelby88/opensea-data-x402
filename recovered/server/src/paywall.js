@@ -1,7 +1,13 @@
 import { defineToolPaywall } from "@opensea/tool-sdk";
 // Single source of truth for the price/recipient advertised in the ERC-8257
 // manifest and enforced by the x402 v2 middleware in server.ts.
-export const PAY_TO = "0x7861db4efc14a1ed5dd8c96c528a3796560f1393";
+// 2026-10-11 payTo reroute: env X402_PAY_TO (default = Coinbase Wallet 0x9B8a...f72f). Fail-closed two-address
+// transition allowlist (lowercase compare): new 0x9B8a...f72f + legacy 0x7861...1393; anything else throws at import.
+const ALLOWED_PAY_TO = ["0x9b8a27e03ceba490953cda8ab1291c0e13baf72f", "0x7861db4efc14a1ed5dd8c96c528a3796560f1393"];
+export const PAY_TO = process.env.X402_PAY_TO || "0x9B8a27e03CEbA490953cDa8AB1291c0E13bAf72f";
+if (!/^0x[a-fA-F0-9]{40}$/.test(PAY_TO) || !ALLOWED_PAY_TO.includes(PAY_TO.toLowerCase())) {
+    throw new Error("FATAL: canonical X402_PAY_TO required");
+}
 export const AMOUNT_USDC = "0.01";
 export const PRICE = `$${AMOUNT_USDC}`;
 // AgentPay facilitator: free, open verification for Base-mainnet x402 sellers
