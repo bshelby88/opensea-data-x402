@@ -8,6 +8,7 @@ import { declareDiscoveryExtension } from "@x402/extensions/bazaar";
 import { toolHandler } from "./handler.js";
 import { manifest } from "./manifest.js";
 import { FACILITATOR_URL, NETWORK, PAY_TO, PRICE } from "./paywall.js";
+import { buildAgentCard } from "./agent-card.js";
 const app = express();
 app.set("trust proxy", true); // Fly terminates TLS — emit https resource URL in challenges
 app.use(express.json());
@@ -149,7 +150,7 @@ app.use(paymentMiddleware({
             extra: { facilitator: FACILITATOR_URL },
         },
         serviceName: "opensea-collection-data",
-        description: "OpenSea collection data: floor, listings, offers, traits for any slug.",
+        description: "Query OpenSea collection data for any slug: floor price, listings, offers, and traits. POST {slug}, receive structured collection data as JSON. $0.01 per call, Base USDC x402.",
         extensions: { ...bazaarExtension },
     },
     "* /api": {
@@ -161,7 +162,7 @@ app.use(paymentMiddleware({
             extra: { facilitator: FACILITATOR_URL },
         },
         serviceName: "opensea-collection-data",
-        description: "OpenSea collection data: floor, listings, offers, traits for any slug. (GET/HEAD gate for Bazaar validate_endpoint)",
+        description: "Query OpenSea collection data for any slug: floor price, listings, offers, and traits. POST {slug}, receive structured collection data as JSON. $0.01 per call, Base USDC x402. (GET/HEAD gate for Bazaar validate_endpoint)",
         extensions: { ...bazaarExtension },
     },
 }, x402Server, undefined, undefined, false));
@@ -174,11 +175,27 @@ app.get("/.well-known/ai-tool/:slug", toExpressHandler(wellKnownHandler));
 app.get("/.well-known/x402.json", (_req, res) => {
     res.json(x402Discovery);
 });
+// 402index.io domain verification (STRAT-103): the directory's claim flow
+// requires /.well-known/402index-verify.txt served DIRECTLY (no redirects,
+// <1KB). express.static below ignores dotfiles, so this explicit route is the
+// fleet pattern (rae-fleet-router index.js:753). Hash = current claim's
+// verification_hash (SHA-256 of the claim token); override via env if the
+// claim is re-issued.
+const X402INDEX_VERIFY_HASH =
+    process.env.X402INDEX_VERIFY_HASH ||
+    "3223e7936cc47829b4e816bcc8bac1b845a26337e740984d0e76526eaff3ab84";
+app.get("/.well-known/402index-verify.txt", (_req, res) => {
+    res.type("text/plain").send(X402INDEX_VERIFY_HASH);
+});
 app.get("/openapi.json", (_req, res) => {
     res.json(openapiSpec);
 });
 app.get("/health", (_req, res) => {
     res.json({ ok: true, tool: manifest.name });
+});
+// A2A agent card (free metadata; no payment logic touched).
+app.get(["/.well-known/agent.json", "/.well-known/agent-card.json"], (_req, res) => {
+    res.json(buildAgentCard({ baseUrl: "https://opensea-data-x402.fly.dev", price: PRICE, network: NETWORK }));
 });
 // GET /sample — machine-readable free sample (RAEN A2A charter surface):
 // one real OpenSea call, paid by the service, so buyers get live evidence pre-purchase.
